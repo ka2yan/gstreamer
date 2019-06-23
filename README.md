@@ -1,27 +1,26 @@
 # gstreamer
 
 ## Device
-Raspberry Pi2
-Camera : Logitech WebCam C270
-Mic : Buauty BU-11
+Raspberry Pi2  
+Camera : Logitech WebCam C270  
+Mic : Buauty BU-11  
 
 ## Install
-```
-$ sudo apt-get install gstreamer1.0 gstreamer1.0-tools
-```
+`$ sudo apt-get install gstreamer1.0 gstreamer1.0-tools`
 
 ## Youtube live
-Check youtube live rtmp URL and Stream Key.
+Check youtube live rtmp URL and Stream Key and insert below
 
 ```
 gst-launch-1.0 -v v4l2src \
-    ! video/x-raw,width=1280,height=960,framerate=30/1 \
+    ! video/x-raw,width=1280,height=720,framerate=30/1 \
     ! omxh264enc \
     ! h264parse \
     ! flvmux name=mux \
     alsasrc device=hw:0 ! queue ! audioconvert ! voaacenc ! aacparse ! mux. \
     mux. ! rtmpsink location="rtmp://<youtube_rtmp_url>/<key> live=1 flashver=FME/3.0%20(compatible;%20FMSc%201.0)"
 ```
+- video/x-raw : Webcam C270 doesn't support H.264 encoding, below. use x-raw when you use YUV data.
 
 
 # Device info
