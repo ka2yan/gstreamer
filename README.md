@@ -71,3 +71,39 @@ ioctl: VIDIOC_ENUM_FMT
 			Interval: Discrete 0.100s (10.000 fps)
 			Interval: Discrete 0.200s (5.000 fps)
 ```
+
+
+-----------------------
+Facebook Live
+Facebook Live requests RTMPS from 2019-11. Encoder cannot send with RTMP)
+
+gstreamer(rtmpsink) support RTMPS. because librtmp supports RTMPS.
+
+```
+$ gst-launch-1.0 -v v4l2src \
+    ! video/x-raw,width=1280,height=720,framerate=30/1 \
+    ! omxh264enc \
+    ! h264parse \
+    ! flvmux name=mux \
+    alsasrc ! audio/x-raw,format=S16LE,layout=interleaved,rate=48000,channels=1 ! queue ! audioconvert ! voaacenc ! aacparse ! mux. \
+    mux. ! rtmpsink location="<facebook_rtmps_url>/<key> live=1 flashver=FME/3.0%20(compatible;%20FMSc%201.0)"
+
+#    <facebook_rtmps_url> : "rtmps://live-api-s.facebook.com:443/rtmp/
+
+Does gstreamer really use RTMPS ?
+```
+$ cat /proc/<pid>maps | grep librtmp
+75a8a000-75aa1000 r-xp 00000000 b3:07 142169     /usr/lib/arm-linux-gnueabihf/librtmp.so.1
+75aa1000-75ab1000 ---p 00017000 b3:07 142169     /usr/lib/arm-linux-gnueabihf/librtmp.so.1
+75ab1000-75ab2000 r--p 00017000 b3:07 142169     /usr/lib/arm-linux-gnueabihf/librtmp.so.1
+75ab2000-75ab3000 rw-p 00018000 b3:07 142169     /usr/lib/arm-linux-gnueabihf/librtmp.so.1
+$ cat /proc/<pid>maps | grep crypt
+72358000-723e6000 r-xp 00000000 b3:07 670516     /lib/arm-linux-gnueabihf/libgcrypt.so.20.0.3
+723e6000-723f5000 ---p 0008e000 b3:07 670516     /lib/arm-linux-gnueabihf/libgcrypt.so.20.0.3
+723f5000-723f6000 r--p 0008d000 b3:07 670516     /lib/arm-linux-gnueabihf/libgcrypt.so.20.0.3
+723f6000-723fa000 rw-p 0008e000 b3:07 670516     /lib/arm-linux-gnueabihf/libgcrypt.so.20.0.3
+$ netstat -a | grep live
+tcp        0      0 <rasberrypi_ip>:36676      livestream-edgete:https ESTABLISHED
+
+```
+I think so.
