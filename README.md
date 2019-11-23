@@ -92,14 +92,21 @@ $ gst-launch-1.0 -v v4l2src \
 - <facebook_rtmps_url> : "rtmps://live-api-s.facebook.com:443/rtmp/
 
 ## Does gstreamer really use RTMPS ?
+I think so.
 ```
-$ cat /proc/<pid>maps | grep librtmp
+$ cat /proc/<pid>/maps | grep librtmp
 75a8a000-75aa1000 r-xp 00000000 b3:07 142169     /usr/lib/arm-linux-gnueabihf/librtmp.so.1
 75aa1000-75ab1000 ---p 00017000 b3:07 142169     /usr/lib/arm-linux-gnueabihf/librtmp.so.1
 75ab1000-75ab2000 r--p 00017000 b3:07 142169     /usr/lib/arm-linux-gnueabihf/librtmp.so.1
 75ab2000-75ab3000 rw-p 00018000 b3:07 142169     /usr/lib/arm-linux-gnueabihf/librtmp.so.1
 
-$ cat /proc/<pid>maps | grep crypt
+$ cat /proc/<pid>/maps | grep tls
+75977000-75a73000 r-xp 00000000 b3:07 148172     /usr/lib/arm-linux-gnueabihf/libgnutls-deb0.so.28.43.4
+75a73000-75a83000 ---p 000fc000 b3:07 148172     /usr/lib/arm-linux-gnueabihf/libgnutls-deb0.so.28.43.4
+75a83000-75a88000 r--p 000fc000 b3:07 148172     /usr/lib/arm-linux-gnueabihf/libgnutls-deb0.so.28.43.4
+75a88000-75a8a000 rw-p 00101000 b3:07 148172     /usr/lib/arm-linux-gnueabihf/libgnutls-deb0.so.28.43.4
+
+$ cat /proc/<pid>/maps | grep crypt
 72358000-723e6000 r-xp 00000000 b3:07 670516     /lib/arm-linux-gnueabihf/libgcrypt.so.20.0.3
 723e6000-723f5000 ---p 0008e000 b3:07 670516     /lib/arm-linux-gnueabihf/libgcrypt.so.20.0.3
 723f5000-723f6000 r--p 0008d000 b3:07 670516     /lib/arm-linux-gnueabihf/libgcrypt.so.20.0.3
@@ -108,4 +115,6 @@ $ cat /proc/<pid>maps | grep crypt
 $ netstat -a | grep live
 tcp        0      0 <rasberrypi_ip>:36676      livestream-edgete:https ESTABLISHED
 ```
-I think so.
+
+- librtmp will use gnutls in my raspberry pi.
+
